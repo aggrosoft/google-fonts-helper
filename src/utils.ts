@@ -114,6 +114,7 @@ export function parseFontsFromCss (content: string, fontsPath: string): FontInpu
     face: /\s*(?:\/\*\s*(.*?)\s*\*\/)?[^@]*?@font-face\s*{(?:[^}]*?)}\s*/gi,
     family: /font-family\s*:\s*(?:'|")?([^;]*?)(?:'|")?\s*;/i,
     weight: /font-weight\s*:\s*([^;]*?)\s*;/i,
+    style: /font-style\s*:\s*([^;]*?)\s*;/i,
     url: /url\s*\(\s*(?:'|")?\s*([^]*?)\s*(?:'|")?\s*\)\s*?/gi
   }
 
@@ -126,6 +127,8 @@ export function parseFontsFromCss (content: string, fontsPath: string): FontInpu
     const family = familyRegExpArray ? familyRegExpArray[1] : ''
     const weightRegExpArray = re.weight.exec(fontface)
     const weight = weightRegExpArray ? weightRegExpArray[1] : ''
+    const styleRegExpArray = re.style.exec(fontface)
+    const style = styleRegExpArray ? styleRegExpArray[1] : ''
 
     let match2
     while ((match2 = re.url.exec(fontface)) !== null) {
@@ -134,10 +137,11 @@ export function parseFontsFromCss (content: string, fontsPath: string): FontInpu
       const ext = extname(urlPathname)
       if (ext.length < 2) { continue }
       const filename = basename(urlPathname, ext) || ''
-      const newFilename = formatFontFileName('{_family}-{weight}-{comment}{i}.{ext}', {
+      const newFilename = formatFontFileName('{_family}-{weight}-{style}.{ext}', {
         comment: comment || '',
         family,
         weight: weight || '',
+        style: style || '',
         filename,
         _family: family.replace(/\s+/g, '_'),
         ext: ext.replace(/^\./, '') || '',
